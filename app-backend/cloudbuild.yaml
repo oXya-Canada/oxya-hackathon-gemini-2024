@@ -1,0 +1,31 @@
+steps:
+  # REPLACE UPDATE_ME_SA with _SERVICE_ACCOUNT in app.yaml
+  - name: node
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - sed -i "s/UPDATE_ME_SA/${_SERVICE_ACCOUNT}/g" app.yaml
+    dir: 'app-backend'
+  - name: node:20.9.0
+    entrypoint: npm
+    args: ['run', 'create-env']
+    env:
+      - 'ORIGIN=${_ORIGIN}'
+      - 'GOOGLE_GEN_AI_KEY=${_GOOGLE_GEN_AI_KEY}'
+    dir: 'app-backend'
+  - name: node:20.9.0
+    entrypoint: npm
+    args: ['install']
+    dir: 'app-backend'
+  - name: node:20.9.0
+    entrypoint: npm
+    args: ['run', 'build']
+    dir: 'app-backend'
+  #debugging, print folder content
+  - name: 'bash'
+    script: 'ls -alR dist'
+    dir: 'app-backend'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['app', 'deploy']
+    dir: 'app-backend'
+timeout: '1600s'

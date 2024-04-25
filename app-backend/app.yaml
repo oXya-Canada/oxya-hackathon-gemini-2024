@@ -1,0 +1,9 @@
+runtime: nodejs20
+service: backend
+service_account: UPDATE_ME_SA
+
+automatic_scaling:
+  max_instances: 2
+  min_instances: 1
+  max_pending_latency: 15s
+  max_concurrent_requests: 100

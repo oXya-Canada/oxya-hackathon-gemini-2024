@@ -1,0 +1,45 @@
+# steps:
+# #Create .env file from Google Cloud Build substitution variables
+# - name: node
+#   entrypoint: npm
+#   args: ["run", "create-env"]
+#   env:
+#     - 'VITE_PROJECT=${_VITE_PROJECT}'
+# #The .env file is prepared and ready to deploy to Google App Engine
+# - name: "gcr.io/cloud-builders/gcloud"
+#   args: ["app", "deploy"]
+# timeout: "1600s"
+
+steps:
+    - name: node
+      entrypoint: /bin/bash
+      args:
+          - -c
+          - sed -i "s/UPDATE_ME_SA/${_SERVICE_ACCOUNT}/g" app.yaml
+      dir: "app-frontend"
+    #Create .env file from Google Cloud Build substitution variables
+    - name: node:20.11.1
+      entrypoint: npm
+      args: ["run", "create-env"]
+      env:
+          - "VITE_PROJECT=${_VITE_PROJECT}"
+          - "VITE_SERVER_URL=${_VITE_SERVER_URL}"
+          - "VITE_EXCEL_INPUT_URL=${_VITE_EXCEL_INPUT_URL}"
+          - "VITE_EXCEL_FIREWALL_URL=${_VITE_EXCEL_FIREWALL_URL}"
+          - "VITE_AZURE_DEVOPS_LINK=${_VITE_AZURE_DEVOPS_LINK}"
+      dir: "app-frontend"
+    - name: node:20.11.1
+      entrypoint: npm
+      args: ["install"]
+      dir: "app-frontend"
+    - name: node:20.11.1
+      entrypoint: npm
+      args: ["run", "build"]
+      dir: "app-frontend"
+    - name: "gcr.io/cloud-builders/gcloud"
+      args: ["app", "deploy"]
+      dir: "app-frontend"
+    - name: "gcr.io/cloud-builders/gcloud"
+      args: ["app", "deploy", "dispatch.yaml"]
+      dir: "app-frontend"
+timeout: "1600s"
