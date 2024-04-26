@@ -7,7 +7,7 @@
       flipped = false;
     "
     color="primary"
-    label="Testing Mod"
+    label="Learning Mode / Training Mode"
   ></v-switch>
 
   <Transition name="flip" mode="out-in" :duration="250">
