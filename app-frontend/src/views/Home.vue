@@ -5,12 +5,21 @@ import _ from "lodash";
 import { useCardStore } from "@/store/card";
 import type { Card } from "@/store/card";
 import { useDisplay } from "vuetify";
+import svgFile from "@/assets/background.svg";
 
 const cardStore = useCardStore();
 cardStore.getTopics();
 
 const cards = ref([] as Card[]);
 const selectedTopicId = ref("");
+
+const svgContent = ref("");
+
+fetch(svgFile)
+  .then((response) => response.text())
+  .then((text) => {
+    svgContent.value = text;
+  });
 
 watch(selectedTopicId, (newVal) => {
   if (newVal != "") {
@@ -41,10 +50,20 @@ const reset = () => {
 };
 </script>
 
+<style>
+.svg-background {
+  background-image: url("../assets/background.svg"); /* Chemin vers votre fichier SVG */
+  background-size: cover; /* Redimensionne le fond pour couvrir l'ensemble de l'élément */
+  background-position: center; /* Centre le fond horizontalement et verticalement */
+  background-repeat: no-repeat; /* Empêche la répétition du fond */
+}
+</style>
+
 <template>
+  <!-- <div class="svg-background" v-html="svgContent"></div> -->
   <v-main
-    class="d-flex align-center justify-center flex-column"
-    style="min-height: 300px"
+    class="d-flex align-center justify-center flex-column svg-background"
+    style="min-height: 300px; z-index: 1"
   >
     <div v-if="!(cards.length > 0)">
       <v-card elevation="12">

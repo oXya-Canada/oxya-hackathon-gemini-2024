@@ -1,6 +1,5 @@
 <template>
   <v-switch
-    style="position: absolute; top: 80px"
     :modelValue="cardMod == 'testing' ? true : false"
     v-on:update:model-value="
       cardMod = $event ? 'testing' : 'learning';
@@ -28,7 +27,7 @@
       "
     >
       <v-carousel
-        height="500"
+        height="450"
         progress="primary"
         hide-delimiters
         :show-arrows="xs ? false : true"

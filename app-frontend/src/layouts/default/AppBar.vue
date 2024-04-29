@@ -32,23 +32,20 @@
           sm="2"
           v-if="!xs"
         >
-          <SwitchTheme />
+          <!-- <SwitchTheme />
           <v-btn
             stacked
             style="z-index: 9999; padding: unset; min-width: 56px"
             density="comfortable"
             class="mr-2"
           >
-            <!-- <v-progress-circular size="40" color="primary" model-value="100">
-            <v-icon size="default" icon="mdi-help" color="primary"></v-icon>
-            </v-progress-circular> -->
             <v-icon
               size="default"
               icon="mdi-help-circle-outline"
               color="primary"
             ></v-icon>
             <GitRequest />
-          </v-btn>
+          </v-btn> -->
           <LogoOxya v-if="!smAndDown"></LogoOxya>
         </v-col>
       </v-row>
