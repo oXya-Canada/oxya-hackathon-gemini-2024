@@ -51,7 +51,7 @@
             ></v-icon>
             <GitRequest />
           </v-btn> -->
-          <LogoOxya v-if="!smAndDown"></LogoOxya>
+          <LogoOxya v-if="!xs"></LogoOxya>
         </v-col>
       </v-row>
     </v-container>
