@@ -5,21 +5,12 @@ import _ from "lodash";
 import { useCardStore } from "@/store/card";
 import type { Card } from "@/store/card";
 import { useDisplay } from "vuetify";
-import svgFile from "@/assets/background.svg";
 
 const cardStore = useCardStore();
 cardStore.getTopics();
 
 const cards = ref([] as Card[]);
 const selectedTopicId = ref("");
-
-const svgContent = ref("");
-
-fetch(svgFile)
-  .then((response) => response.text())
-  .then((text) => {
-    svgContent.value = text;
-  });
 
 watch(selectedTopicId, (newVal) => {
   if (newVal != "") {

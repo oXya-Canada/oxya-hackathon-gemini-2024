@@ -3,12 +3,17 @@
     <v-container fluid>
       <v-row dense>
         <v-col class="d-flex justify-start" cols="2" v-if="!xs">
-          <h3 style="z-index: 9999" class="align-self-center text-center">
+          <div
+            class="d-flex align-self-center"
+            style="z-index: 9999; width: 120px"
+            v-html="svgContent"
+          ></div>
+          <!-- <h3 style="z-index: 9999" class="align-self-center text-center">
             FlashCard It
             <v-tooltip activator="parent" location="right"
               >Version {{ version }}</v-tooltip
             >
-          </h3>
+          </h3> -->
         </v-col>
         <v-col class="d-flex justify-center" cols="12" sm="8" md="8" lg="8">
           <v-tabs fixed-tabs stacked v-model="tab" style="display: contents">
@@ -67,7 +72,14 @@ import LogoOxya from "@/components/LogoOxya.vue";
 import { useUserStore } from "@/store/user";
 import GitRequest from "@/components/GitRequest.vue";
 import SwitchTheme from "@/components/SwitchTheme.vue";
+import svgFile from "@/assets/Flashcard_it.svg";
+const svgContent = ref("");
 
+fetch(svgFile)
+  .then((response) => response.text())
+  .then((text) => {
+    svgContent.value = text;
+  });
 const version = import.meta.env.PACKAGE_VERSION;
 const route = useRoute();
 const path = computed(() => route.path);

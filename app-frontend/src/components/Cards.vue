@@ -6,8 +6,13 @@
       flipped = false;
     "
     color="primary"
-    label="Learning Mode / Training Mode"
-  ></v-switch>
+    label="Training Mode"
+    class="mb-0"
+  >
+    <template #prepend>
+      <v-label>Learning Mode</v-label>
+    </template>
+  </v-switch>
 
   <Transition name="flip" mode="out-in" :duration="250">
     <v-card
