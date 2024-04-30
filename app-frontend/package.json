@@ -14,7 +14,6 @@
     "type": "module",
     "dependencies": {
         "@babel/types": "^7.24.0",
-        "@google/generative-ai": "^0.5.0",
         "@mdi/font": "7.4.47",
         "@vueuse/core": "^10.9.0",
         "axios": "^1.6.8",
@@ -26,7 +25,7 @@
         "vue": "^3.4.21",
         "vue-router": "^4.3.0",
         "vue-toastification": "^2.0.0-rc.5",
-        "vuetify": "3.5.14",
+        "vuetify": "3.6.1",
         "webfontloader": "^1.6.28"
     },
     "devDependencies": {
