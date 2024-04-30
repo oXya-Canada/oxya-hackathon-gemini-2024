@@ -5,7 +5,7 @@
         <v-col class="d-flex justify-start" cols="2" v-if="!xs">
           <div
             class="d-flex align-self-center"
-            style="z-index: 9999; width: 120px"
+            style="z-index: 9999; width: 110px"
             v-html="svgContent"
           ></div>
           <!-- <h3 style="z-index: 9999" class="align-self-center text-center">
