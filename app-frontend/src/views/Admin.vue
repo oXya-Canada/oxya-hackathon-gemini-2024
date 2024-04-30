@@ -136,6 +136,7 @@
         </v-form>
       </v-card>
     </v-container>
+    <BackToTop />
   </v-main>
 </template>
 
@@ -145,6 +146,7 @@ import { useCardStore } from "@/store/card";
 import EditableCard from "@/components/EditableCard.vue";
 import { watch } from "vue";
 import type { Topic } from "@/store/card";
+import BackToTop from "@/components/BackToTop.vue";
 
 const cardStore = useCardStore();
 cardStore.getTopics();
