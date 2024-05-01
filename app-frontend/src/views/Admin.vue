@@ -191,7 +191,11 @@
                             ></v-number-input>
                             <v-btn
                               color="primary"
-                              prepend-icon="mdi-chip"
+                              :prepend-icon="
+                                selectedOption == 'manual'
+                                  ? 'mdi-pencil-box-outline'
+                                  : 'mdi-star-four-points'
+                              "
                               block
                               type="submit"
                               :loading="cardStore.status == 'pending'"
@@ -202,7 +206,11 @@
                                 }
                               "
                             >
-                              Generate
+                              {{
+                                selectedOption == "manual"
+                                  ? "Add new question"
+                                  : "Generate with Gemini"
+                              }}
                             </v-btn>
                           </div>
                         </v-card-text>

@@ -20,7 +20,6 @@
       elevation="24"
       :min-width="xs ? '380px' : smAndDown ? '500px' : '800px'"
       v-bind:key="flipped ? 'a' : 'b'"
-      style="position: relative"
       color="primary"
       :theme="flipped ? 'dark' : 'light'"
       @keydown.space="toggleCard(questions[cardNumber])"
@@ -29,6 +28,18 @@
       "
       @keydown.left="
         cardNumber != 0 ? cardNumber-- : (cardNumber = questions.length - 1)
+      "
+      style="
+        position: relative;
+        background: linear-gradient(
+          90deg,
+          /* rgba(102, 36, 131, 1) 0%, */ /* rgba(109, 55, 143, 1) 8%, */
+            rgba(125, 99, 170, 1) 0%,
+          rgba(139, 133, 192, 1) 49%,
+          rgba(148, 157, 208, 1) 68%,
+          rgba(154, 172, 217, 1) 86%,
+          rgba(156, 178, 221, 1) 100%
+        );
       "
     >
       <v-carousel
@@ -201,5 +212,17 @@ const toggleCard = (card: { flipped: boolean }) => {
   -moz-box-shadow: 9px 10px 22px -8px rgba(209, 193, 209, 0.5);
   box-shadow: 9px 10px 22px -8px rgba(209, 193, 209, 0.5);
   will-change: transform;
+}
+
+.v-progress-linear__determinate.bg-primary {
+  background: linear-gradient(
+    90deg,
+    /* rgba(102, 36, 131, 1) 0%, */ /* rgba(109, 55, 143, 1) 8%, */
+      rgba(125, 99, 170, 1) 0%,
+    rgba(139, 133, 192, 1) 49%,
+    rgba(148, 157, 208, 1) 68%,
+    rgba(154, 172, 217, 1) 86%,
+    rgba(156, 178, 221, 1) 100%
+  );
 }
 </style>
