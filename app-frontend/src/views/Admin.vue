@@ -89,7 +89,7 @@
                 </div>
               </v-sheet>
               <v-virtual-scroll
-                max-height="63vh"
+                max-height="60vh"
                 :items="selectedTopicObject.cards"
               >
                 <template v-slot:default="{ item, index }">
