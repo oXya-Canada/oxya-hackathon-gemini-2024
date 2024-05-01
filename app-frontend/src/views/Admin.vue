@@ -295,7 +295,7 @@ const files = ref([
 const addFile = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
-    for (const file of target.files) {
+    for (const file of target.files as any) {
       files.value.push({
         name: file.name,
         data: file,
@@ -379,7 +379,7 @@ const generateCards = async () => {
       }
       break;
     case "libraryPdf":
-      await generateCardsFromFiles();
+      // await generateCardsFromFiles();
       break;
   }
 };
