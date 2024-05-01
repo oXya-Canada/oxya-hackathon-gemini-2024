@@ -95,6 +95,7 @@ const reset = () => {
               type="submit"
               :loading="cardStore.status == 'pending'"
               color="primary"
+              style="border-top-left-radius: 0; border-top-right-radius: 0"
             >
               Generate
             </v-btn>

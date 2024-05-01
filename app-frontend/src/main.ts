@@ -35,7 +35,10 @@ axios.interceptors.response.use(
 
     // Use it!
     if (response.data.message)
-      toast.info("Success : " + response.data.message, { timeout: 1000 });
+      toast.info("Success : " + response.data.message, {
+        timeout: 1000,
+        toastClassName: "bg-primary",
+      });
     if (response.data?.create_notification) {
       const notificationStore = useNotificationStore();
       notificationStore.addNotification(response.data.create_notification);
