@@ -7,7 +7,7 @@
     "
     color="primary"
     label="Training Mode"
-    class="mb-0"
+    class="font-weight-black"
   >
     <template #prepend>
       <v-label>Learning Mode</v-label>
@@ -21,7 +21,7 @@
       :min-width="xs ? '380px' : smAndDown ? '500px' : '800px'"
       v-bind:key="flipped ? 'a' : 'b'"
       style="position: relative"
-      color="success"
+      color="primary"
       :theme="flipped ? 'dark' : 'light'"
       @keydown.space="toggleCard(questions[cardNumber])"
       @keydown.right="

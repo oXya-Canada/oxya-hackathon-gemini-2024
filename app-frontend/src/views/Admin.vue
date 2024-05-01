@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main class="svg-background">
     <v-container>
       <v-card elevation="12">
         <v-form ref="form" @submit.prevent="saveQuestions">
@@ -34,19 +34,72 @@
                 </div>
               </template>
             </v-select>
-            <div class="mt-8" v-if="selectedTopicId != ''">
+            <div class="mt-4" v-if="selectedTopicId != ''">
               <v-text-field
                 v-model="selectedTopicObject.name"
                 label="Topic name"
                 hide-details
               />
-              <div v-for="(card, i) in selectedTopicObject.cards">
-                <EditableCard
-                  :question="card"
-                  :index="i"
-                  @delete="removeQuestion"
-                ></EditableCard>
-              </div>
+              <v-sheet
+                color="grey-lighten-3"
+                height="auto"
+                width="auto"
+                rounded="b"
+              >
+                <v-label
+                  text="Files"
+                  class="v-label v-field-label v-field-label--floating"
+                  style="
+                    position: unset;
+                    padding: 8px 16px 4px;
+                    visibility: visible;
+                  "
+                ></v-label>
+                <div class="d-flex ml-0 pb-2">
+                  <div>
+                    <v-chip
+                      v-for="(file, i) in files"
+                      class="mr-2 ml-2 ma-1"
+                      close-icon="mdi-delete"
+                      prepend-icon="mdi-file-pdf-box"
+                      closable
+                      @click:close="
+                        console.log(i);
+                        files.splice(i, 0);
+                      "
+                    >
+                      {{ file.name }}
+                    </v-chip>
+                    <v-chip
+                      class="mr-2 ml-2 ma-1 font-weight-medium"
+                      append-icon="mdi-plus"
+                      color="primary"
+                      @click="upload?.click()"
+                    >
+                      <input
+                        ref="upload"
+                        type="file"
+                        hidden
+                        @change="addFile"
+                        accept=".pdf"
+                      />
+                      Add File
+                    </v-chip>
+                  </div>
+                </div>
+              </v-sheet>
+              <v-virtual-scroll
+                max-height="63vh"
+                :items="selectedTopicObject.cards"
+              >
+                <template v-slot:default="{ item, index }">
+                  <EditableCard
+                    :question="item"
+                    :index="index"
+                    @delete="removeQuestion"
+                  ></EditableCard>
+                </template>
+              </v-virtual-scroll>
               <v-row align="center" justify="center" class="mt-4">
                 <v-col cols="auto">
                   <v-btn
@@ -56,23 +109,76 @@
                     v-if="selectedTopicId != ''"
                   >
                   </v-btn>
-                  <v-dialog activator="parent" max-width="500">
+                  <v-dialog activator="parent" max-width="1000">
                     <template v-slot:default="{ isActive }">
                       <v-card
                         prepend-icon="mdi-help-box-multiple-outline"
                         title="Adding question(s)"
                       >
-                        <v-card-text
-                          class="d-flex justify-space-around align-center"
-                          ><div class="mr-4">
-                            <v-file-input
-                              accept=".pdf"
-                              label="PDF input"
-                              prepend-icon="mdi-file-pdf-box"
-                              hide-details
-                              clearable
-                              @change="selectFile"
-                            ></v-file-input>
+                        <v-card-text>
+                          <v-radio-group v-model="selectedOption">
+                            <v-row
+                              no-gutters
+                              class="d-flex justify-space-around align-start"
+                            >
+                              <v-col cols="12" md="auto" class="text-center">
+                                <v-radio
+                                  label="Manual"
+                                  value="manual"
+                                ></v-radio>
+                              </v-col>
+                              <v-divider vertical v-if="mdAndUp"></v-divider>
+                              <v-col cols="12" md="auto" class="text-center">
+                                <v-radio
+                                  label="From Topic Name"
+                                  value="topicName"
+                                ></v-radio>
+                              </v-col>
+                              <v-divider vertical v-if="mdAndUp"></v-divider>
+                              <v-col cols="12" md="auto" class="text-center">
+                                <v-radio
+                                  label="From One PDF file"
+                                  value="onePdf"
+                                ></v-radio>
+                                <v-file-input
+                                  v-if="selectedOption == 'onePdf'"
+                                  accept=".pdf"
+                                  label="PDF input"
+                                  prepend-icon="mdi-file-pdf-box"
+                                  hide-details
+                                  clearable
+                                  @change="selectFile"
+                                  style="width: 200px"
+                                ></v-file-input>
+                              </v-col>
+                              <v-divider vertical v-if="mdAndUp"></v-divider>
+                              <v-col cols="12" md="auto" class="text-center">
+                                <v-radio
+                                  label="From Library PDF files"
+                                  value="libraryPdf"
+                                ></v-radio>
+                                <div
+                                  class="d-flex flex-column"
+                                  v-if="selectedOption == 'libraryPdf'"
+                                >
+                                  <v-chip
+                                    v-for="(file, i) in files"
+                                    class="mr-2 ml-2 ma-1"
+                                    prepend-icon="mdi-file-pdf-box"
+                                    @click:close="
+                                      console.log(i);
+                                      files.splice(i, 0);
+                                    "
+                                  >
+                                    {{ file.name }}
+                                  </v-chip>
+                                </div>
+                              </v-col>
+                            </v-row>
+                          </v-radio-group>
+                          <div class="mr-4"></div>
+                          <div class="ml-4">
+                            <v-divider class="mb-4"></v-divider>
                             <v-number-input
                               v-model="numberOfCards"
                               :reverse="false"
@@ -83,21 +189,8 @@
                               inset
                               :max="20"
                             ></v-number-input>
-                          </div>
-                          <div class="ml-4">
                             <v-btn
-                              prepend-icon="mdi-note-edit"
-                              block
-                              @click="
-                                () => {
-                                  addNewQuestion();
-                                  isActive.value = false;
-                                }
-                              "
-                              >Manual</v-btn
-                            >
-                            <v-divider class="mt-4 mb-4"></v-divider>
-                            <v-btn
+                              color="primary"
                               prepend-icon="mdi-chip"
                               block
                               type="submit"
@@ -139,7 +232,14 @@
     <BackToTop />
   </v-main>
 </template>
-
+<style scoped>
+.svg-background {
+  background-image: url("../assets/background.svg"); /* Chemin vers votre fichier SVG */
+  background-size: cover; /* Redimensionne le fond pour couvrir l'ensemble de l'élément */
+  background-position: center; /* Centre le fond horizontalement et verticalement */
+  background-repeat: no-repeat; /* Empêche la répétition du fond */
+}
+</style>
 <script lang="ts" setup>
 import { Ref, ref } from "vue";
 import { useCardStore } from "@/store/card";
@@ -147,11 +247,15 @@ import EditableCard from "@/components/EditableCard.vue";
 import { watch } from "vue";
 import type { Topic } from "@/store/card";
 import BackToTop from "@/components/BackToTop.vue";
+import { useDisplay } from "vuetify";
+
+const { mdAndUp } = useDisplay();
 
 const cardStore = useCardStore();
 cardStore.getTopics();
 
 const selectedTopicId = ref("");
+const selectedOption = ref("manual");
 const numberOfCards = ref(1);
 const selectedTopicObject = ref({ id: "", name: "", cards: [] } as Topic);
 const selectedFile: Ref<File | null> = ref(null);
@@ -167,6 +271,40 @@ watch(selectedTopicId, (newVal) => {
     );
   }
 });
+
+const upload = ref(null as HTMLInputElement | null);
+
+const files = ref([
+  {
+    name: "Nova - Documentation.pdf",
+    corpus_id: 1,
+    id: 1,
+  },
+  {
+    name: "Nova - User Guide.pdf",
+    corpus_id: 1,
+    id: 2,
+  },
+  {
+    name: "Nova - Technical architecture.pdf",
+    corpus_id: 1,
+    id: 3,
+  },
+] as { name: string; corpus_id: number; id: number; data?: File }[]);
+
+const addFile = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    for (const file of target.files) {
+      files.value.push({
+        name: file.name,
+        data: file,
+        corpus_id: 1,
+        id: files.value.length + 1,
+      });
+    }
+  }
+};
 
 const selectFile = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -215,24 +353,34 @@ const addNewQuestion = () => {
 };
 
 const generateCards = async () => {
-  if (selectedFile.value) {
-    const cards = await cardStore.generateCardsFromFile(
-      selectedFile.value,
-      numberOfCards.value
-    );
-    for (const card of cards) {
-      selectedTopicObject.value.cards.push(card);
-    }
-    return;
-  } else {
-    const cards = await cardStore.generateCards(
-      selectedTopicObject.value.name,
-      numberOfCards.value
-    );
-    console.log(cards);
-    for (const card of cards) {
-      selectedTopicObject.value.cards.push(card);
-    }
+  switch (selectedOption.value) {
+    case "manual":
+      addNewQuestion();
+      break;
+    case "topicName":
+      const cards = await cardStore.generateCardsFromTopicName(
+        selectedTopicObject.value.name,
+        numberOfCards.value
+      );
+      console.log(cards);
+      for (const card of cards) {
+        selectedTopicObject.value.cards.push(card);
+      }
+      break;
+    case "onePdf":
+      if (selectedFile.value) {
+        const cards = await cardStore.generateCardsFromOneFile(
+          selectedFile.value,
+          numberOfCards.value
+        );
+        for (const card of cards) {
+          selectedTopicObject.value.cards.push(card);
+        }
+      }
+      break;
+    case "libraryPdf":
+      await generateCardsFromFiles();
+      break;
   }
 };
 </script>

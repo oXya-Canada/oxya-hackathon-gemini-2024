@@ -28,7 +28,10 @@ export const useCardStore = defineStore("card", {
     status: "idle" as "idle" | "pending" | "succeeded" | "failed",
   }),
   actions: {
-    async generateCards(certification: string, numberOfCards: number) {
+    async generateCardsFromTopicName(
+      certification: string,
+      numberOfCards: number
+    ) {
       this.status = "pending";
       try {
         // const response = await GeminiService.generateTrueFalseCards(
@@ -53,7 +56,7 @@ export const useCardStore = defineStore("card", {
         this.status = "failed";
       }
     },
-    async generateCardsFromFile(file: File, numberOfCards: number) {
+    async generateCardsFromOneFile(file: File, numberOfCards: number) {
       this.status = "pending";
       try {
         const response = await GeminiService.generateCardsFromFile(

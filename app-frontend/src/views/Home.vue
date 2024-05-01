@@ -28,7 +28,7 @@ const certification = ref("");
 
 const submit = async () => {
   console.log("submit");
-  cards.value = await cardStore.generateCards(
+  cards.value = await cardStore.generateCardsFromTopicName(
     certification.value,
     numberOfCards.value
   );
@@ -41,7 +41,7 @@ const reset = () => {
 };
 </script>
 
-<style>
+<style scoped>
 .svg-background {
   background-image: url("../assets/background.svg"); /* Chemin vers votre fichier SVG */
   background-size: cover; /* Redimensionne le fond pour couvrir l'ensemble de l'élément */
@@ -103,7 +103,12 @@ const reset = () => {
       </v-card>
     </div>
     <Cards v-if="cards.length > 0" :cards="cards" />
-    <v-btn v-if="cards.length > 0" class="mt-16" @click="reset">Go Back</v-btn>
+    <v-btn
+      v-if="cards.length > 0"
+      class="mt-16 font-weight-black"
+      @click="reset"
+      >Go Back</v-btn
+    >
     <!-- {{ useDisplay() }} -->
   </v-main>
 </template>

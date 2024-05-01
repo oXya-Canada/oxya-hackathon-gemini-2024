@@ -2,7 +2,20 @@
   <v-container>
     <v-card elevation="6">
       <v-text-field
-        style="background-color: #007fff; color: white"
+        style="
+          background-color: rgb(var(--v-theme-primary)) !important;
+          color: white;
+          background: rgb(102, 36, 131);
+          background: linear-gradient(
+            90deg,
+            /* rgba(102, 36, 131, 1) 0%, */ /* rgba(109, 55, 143, 1) 8%, */
+              rgba(125, 99, 170, 1) 0%,
+            rgba(139, 133, 192, 1) 49%,
+            rgba(148, 157, 208, 1) 68%,
+            rgba(154, 172, 217, 1) 86%,
+            rgba(156, 178, 221, 1) 100%
+          );
+        "
         v-model="question.question"
         :label="'Question ' + (index + 1)"
         hide-details
@@ -26,7 +39,7 @@
               <v-textarea
                 density="compact"
                 v-model="answer.explanation"
-                style="color: #007fff"
+                style="color: rgb(var(--v-theme-primary)) !important"
                 label="Explanation"
                 auto-grow
                 rows="1"
@@ -37,7 +50,7 @@
                 v-model="answer.correct"
                 label="Correct"
                 hide-details
-                :style="answer.correct ? 'color: #40a829' : 'color: #e01010'"
+                :color="answer.correct ? 'success' : 'error'"
               />
               <!-- </div> -->
             </v-card-text>
