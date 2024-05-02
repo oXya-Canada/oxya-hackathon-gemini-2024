@@ -210,6 +210,10 @@
                               block
                               type="submit"
                               :loading="cardStore.status == 'pending'"
+                              style="
+                                border-top-left-radius: 0;
+                                border-top-right-radius: 0;
+                              "
                               @click="
                                 () => {
                                   generateCards();
