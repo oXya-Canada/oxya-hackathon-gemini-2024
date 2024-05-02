@@ -69,6 +69,12 @@
                         selectedTopicObject.documents?.splice(i, 0);
                       "
                     >
+                      <template v-slot:close>
+                        <v-icon>mdi-delete</v-icon>
+                        <v-tooltip activator="parent"
+                          >Function not working for demo</v-tooltip
+                        >
+                      </template>
                       {{ file.name }}
                     </v-chip>
                     <v-skeleton-loader
