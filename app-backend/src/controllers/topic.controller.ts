@@ -75,8 +75,8 @@ class TopicController {
           }
         }
         //TODO: do the same for deleting files
-        await this.topicService.updateTopic({ ...topic, ...{ corpus_id: prevTopic.corpus_id } });
-        return res.status(200).json({ data: { topicId: topic.id, corpus_id: prevTopic.corpus_id }, message: 'updated' });
+        await this.topicService.updateTopic({ ...topic, ...{ corpus_id: prevTopic.corpus_id ?? null } });
+        return res.status(200).json({ data: { topicId: topic.id, corpus_id: prevTopic.corpus_id ?? null }, message: 'updated' });
       }
     } catch (error) {
       next(error);
