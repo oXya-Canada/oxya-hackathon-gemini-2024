@@ -58,23 +58,36 @@
                 <div class="d-flex ml-0 pb-2">
                   <div>
                     <v-chip
-                      v-for="(file, i) in files"
+                      v-if="cardStore.statusDocuments != 'pending'"
+                      v-for="(file, i) in selectedTopicObject.documents"
                       class="mr-2 ml-2 ma-1"
                       close-icon="mdi-delete"
                       prepend-icon="mdi-file-pdf-box"
                       closable
                       @click:close="
                         console.log(i);
-                        files.splice(i, 0);
+                        selectedTopicObject.documents?.splice(i, 0);
                       "
                     >
                       {{ file.name }}
                     </v-chip>
+                    <v-skeleton-loader
+                      class="mr-2 ml-2 ma-1 font-weight-medium"
+                      v-if="cardStore.statusDocuments == 'pending'"
+                      width="150"
+                      height="32"
+                      color="grey-lighten-3"
+                      type="chip"
+                      loading
+                      loading-text="Loading files"
+                    ></v-skeleton-loader>
                     <v-chip
+                      v-if="cardStore.statusDocuments != 'pending'"
                       class="mr-2 ml-2 ma-1 font-weight-medium"
                       append-icon="mdi-plus"
                       color="primary"
                       @click="upload?.click()"
+                      :loading="true"
                     >
                       <input
                         ref="upload"
@@ -89,7 +102,7 @@
                 </div>
               </v-sheet>
               <v-virtual-scroll
-                max-height="60vh"
+                max-height="63vh"
                 :items="selectedTopicObject.cards"
               >
                 <template v-slot:default="{ item, index }">
@@ -162,13 +175,11 @@
                                   v-if="selectedOption == 'libraryPdf'"
                                 >
                                   <v-chip
-                                    v-for="(file, i) in files"
+                                    v-for="(
+                                      file, i
+                                    ) in selectedTopicObject.documents"
                                     class="mr-2 ml-2 ma-1"
                                     prepend-icon="mdi-file-pdf-box"
-                                    @click:close="
-                                      console.log(i);
-                                      files.splice(i, 0);
-                                    "
                                   >
                                     {{ file.name }}
                                   </v-chip>
@@ -248,6 +259,11 @@
   background-repeat: no-repeat; /* Empêche la répétition du fond */
 }
 </style>
+<style>
+.v-skeleton-loader__chip {
+  margin: unset !important;
+}
+</style>
 <script lang="ts" setup>
 import { Ref, ref } from "vue";
 import { useCardStore } from "@/store/card";
@@ -265,50 +281,38 @@ cardStore.getTopics();
 const selectedTopicId = ref("");
 const selectedOption = ref("manual");
 const numberOfCards = ref(1);
-const selectedTopicObject = ref({ id: "", name: "", cards: [] } as Topic);
+const selectedTopicObject = ref({
+  id: "",
+  name: "",
+  cards: [],
+  documents: [],
+} as Topic);
 const selectedFile: Ref<File | null> = ref(null);
 
 watch(selectedTopicId, (newVal) => {
   if (newVal == "new") {
-    selectedTopicObject.value = { name: "", cards: [] };
+    selectedTopicObject.value = { name: "", cards: [], documents: [] };
     return;
   }
   if (newVal != "") {
     selectedTopicObject.value = JSON.parse(
       JSON.stringify(cardStore.topics.find((topic) => topic.id == newVal))
     );
+    cardStore.getTopicDocuments(newVal).then((files) => {
+      selectedTopicObject.value.documents = files;
+    });
   }
 });
 
 const upload = ref(null as HTMLInputElement | null);
 
-const files = ref([
-  {
-    name: "Nova - Documentation.pdf",
-    corpus_id: 1,
-    id: 1,
-  },
-  {
-    name: "Nova - User Guide.pdf",
-    corpus_id: 1,
-    id: 2,
-  },
-  {
-    name: "Nova - Technical architecture.pdf",
-    corpus_id: 1,
-    id: 3,
-  },
-] as { name: string; corpus_id: number; id: number; data?: File }[]);
-
 const addFile = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
     for (const file of target.files as any) {
-      files.value.push({
+      selectedTopicObject.value.documents?.push({
         name: file.name,
-        data: file,
-        corpus_id: 1,
-        id: files.value.length + 1,
+        file: file,
       });
     }
   }
@@ -363,7 +367,7 @@ const addNewQuestion = () => {
 const generateCards = async () => {
   switch (selectedOption.value) {
     case "manual":
-      addNewQuestion();
+      for (let i = 0; i < numberOfCards.value; i++) addNewQuestion();
       break;
     case "topicName":
       const cards = await cardStore.generateCardsFromTopicName(
@@ -387,7 +391,15 @@ const generateCards = async () => {
       }
       break;
     case "libraryPdf":
-      // await generateCardsFromFiles();
+      if (selectedTopicObject.value.corpus_id) {
+        const cards = await cardStore.generateCardsFromCorpus(
+          selectedTopicObject.value.corpus_id,
+          numberOfCards.value
+        );
+        for (const card of cards) {
+          selectedTopicObject.value.cards.push(card);
+        }
+      }
       break;
   }
 };

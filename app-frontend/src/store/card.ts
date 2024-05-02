@@ -19,6 +19,8 @@ export interface Topic {
   id?: string;
   name: string;
   cards: Card[];
+  corpus_id?: number;
+  documents?: { id?: number; name: string; file?: File }[];
 }
 
 export const useCardStore = defineStore("card", {
@@ -26,6 +28,7 @@ export const useCardStore = defineStore("card", {
     topics: [] as Topic[],
     cards: [] as Card[],
     status: "idle" as "idle" | "pending" | "succeeded" | "failed",
+    statusDocuments: "idle" as "idle" | "pending" | "succeeded" | "failed",
   }),
   actions: {
     async generateCardsFromTopicName(
@@ -77,31 +80,74 @@ export const useCardStore = defineStore("card", {
         this.status = "failed";
       }
     },
-    async getTopics() {
+    async generateCardsFromCorpus(corpus_id: number, numberOfCards: number) {
       this.status = "pending";
       try {
-        this.topics = await CardService.getTopics();
+        const response = await GeminiService.generateCardsFromCorpus(
+          corpus_id,
+          numberOfCards
+        );
+        console.log(response);
+        try {
+          this.cards = response;
+          this.status = "succeeded";
+          return response;
+        } catch (error) {
+          console.log(error);
+        }
         this.status = "succeeded";
       } catch (error) {
         console.log(error);
         this.status = "failed";
       }
     },
+    async getTopics() {
+      this.status = "pending";
+      try {
+        this.topics = await CardService.getTopics();
+        this.topics.sort((a, b) => a.name.localeCompare(b.name));
+        this.status = "succeeded";
+      } catch (error) {
+        console.log(error);
+        this.status = "failed";
+      }
+    },
+    async getTopicDocuments(topicId: string) {
+      this.statusDocuments = "pending";
+      try {
+        const topic = this.topics.find((t) => t.id === topicId);
+        if (topic) {
+          const documents = await CardService.getTopicDocuments(topicId);
+          topic.documents = documents.map(
+            (d: { id: number; name: string }) => ({
+              id: d.id,
+              name: d.name.split(".pdf.")[0] + ".pdf",
+            })
+          );
+          this.statusDocuments = "succeeded";
+          return topic.documents;
+        }
+        this.statusDocuments = "succeeded";
+      } catch (error) {
+        console.log(error);
+        this.statusDocuments = "failed";
+      }
+    },
     async saveTopic(topic: Topic) {
       this.status = "pending";
       try {
-        const topicId = await CardService.saveTopic(topic);
+        const { topicId, corpus_id } = await CardService.saveTopic(topic);
         //update the topics
         let isUpdate = false;
         this.topics = this.topics.map((t) => {
           if (t.id === topicId) {
             isUpdate = true;
-            return { ...topic, id: topicId };
+            return { ...topic, id: topicId, corpus_id };
           }
           return t;
         });
         if (!isUpdate) {
-          this.topics.push({ ...topic, id: topicId });
+          this.topics.push({ ...topic, id: topicId, corpus_id: corpus_id });
         }
         this.status = "succeeded";
         return topicId;

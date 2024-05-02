@@ -38,6 +38,17 @@ class GeminiService {
       })
     ).data.data;
   }
+
+  async generateCardsFromCorpus(corpus_id: number, numberOfCards: number) {
+    return await (
+      await axios.get(`${SERVER_URL}/api/cards/generateFromCorpus`, {
+        params: {
+          corpus_id,
+          numberOfCards,
+        },
+      })
+    ).data.data;
+  }
 }
 
 export default new GeminiService();

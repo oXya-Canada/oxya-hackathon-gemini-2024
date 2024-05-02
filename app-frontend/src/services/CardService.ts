@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "@/utils/constants";
+import { Topic } from "@/store/card";
 
 class CardService {
   async getTopics() {
@@ -8,9 +9,18 @@ class CardService {
     ).data.data;
   }
 
-  async saveTopic(topic: any) {
+  async saveTopic(topic: Topic) {
+    const formData = new FormData();
+    console.log(topic);
+    if (topic.documents) {
+      for (const document of topic.documents) {
+        if (document.file) formData.append("pdfs", document.file);
+      }
+    }
+    formData.append("topic", JSON.stringify(topic));
+    console.log(formData);
     return await (
-      await axios.put(`${SERVER_URL}/api/topics`, topic)
+      await axios.putForm(`${SERVER_URL}/api/topics`, formData)
     ).data.data;
   }
 
@@ -23,6 +33,12 @@ class CardService {
   async getCards(topic: string) {
     return await (
       await axios.get(`${SERVER_URL}/api/topics/${topic}/cards`)
+    ).data.data;
+  }
+
+  async getTopicDocuments(topicId: string) {
+    return await (
+      await axios.get(`${SERVER_URL}/api/topics/${topicId}/documents`)
     ).data.data;
   }
 }

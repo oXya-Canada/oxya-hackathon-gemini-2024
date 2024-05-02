@@ -15,7 +15,8 @@ class cardRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/generate`, this.cardController.generateCards);
-    this.router.post(`${this.path}/generateFromPdf`, upload.single('pdf'), this.cardController.generateFromPdf);
+    this.router.post(`${this.path}/generateFromPdf`, upload.single('file'), this.cardController.generateFromPdf);
+    this.router.get(`${this.path}/generateFromCorpus`, this.cardController.generateFromCorpus);
     this.router.get(`${this.path}`, this.cardController.getCards);
     this.router.get(`${this.path}/:id`, this.cardController.getCard);
     this.router.post(`${this.path}`, this.cardController.createCard);

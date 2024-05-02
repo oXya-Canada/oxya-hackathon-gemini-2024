@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import CardService from '@/services/card.service';
 import GeminiService from '@/services/gemini.service';
-
+import OxyagenAiService from '@/services/oxyagenai.service';
 class CardController {
   private cardService = new CardService();
   private geminiService = new GeminiService();
+  private oxyagenAiService = new OxyagenAiService();
 
   public getCards = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -77,9 +78,22 @@ class CardController {
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
-      const pdf = req.file.buffer;
+      const pdf = req.file;
       const { numberOfCards } = req.body;
-      const cards = await this.geminiService.generateCardsFromPdf(pdf, Number(numberOfCards));
+      console.log('generateFromPdf', pdf);
+      // const cards = await this.geminiService.generateCardsFromPdf(pdf, Number(numberOfCards));
+      // const cards = [];
+      const cards = await this.oxyagenAiService.generateCardsFromPdf(pdf, Number(numberOfCards));
+      res.status(200).json({ data: cards, message: 'generated' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  public generateFromCorpus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { corpus_id, numberOfCards } = req.query;
+      console.log(corpus_id, numberOfCards);
+      const cards = await this.oxyagenAiService.generateCardsFromCorpus(Number(corpus_id), Number(numberOfCards));
       res.status(200).json({ data: cards, message: 'generated' });
     } catch (error) {
       next(error);
